@@ -1,5 +1,8 @@
-from flask import Flask, render_template
+from pyexpat.errors import messages
+
+from flask import Flask, render_template, reqest
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -21,6 +24,15 @@ class User(db.Model):
         return f'<User: {self.username}>'
 
 
+class Poster(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_name = db.Column(db.String(255), nullable=False)
+    post_text = db.Column(db.Text(), nullable=False)
+    post_image = db.Column(db.String(255), nullable=False)
+    continent = db.Column(db.String(255), nullable=False)
+    create_on = db.Column(db.Date(), default=datetime.utcnow)
+
+
 # створюємо базу даних, використовуємо один раз, після створення закоментувати
 # with app.app_context():
 #     db.create_all()
@@ -39,6 +51,12 @@ def articles():
 
     return render_template('articles.html', articles=new_articles)
 
+@app.route('/add_article', methods=['POST'])
+def add_article():
+    post_name = request.form['title']
+    post_test = request.form['text']
+    post_image = request.form['URL']
+    continent = request.form['continent']
 
 
 @app.route('/details')
@@ -47,7 +65,8 @@ def details():
 
 
 @app.route('/login')
-def login():    
+def login():
+    message = ''
     return render_template('login.html', message=message)
 
 
